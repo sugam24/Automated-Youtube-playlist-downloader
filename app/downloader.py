@@ -107,6 +107,39 @@ def _format_size(size_bytes: int | float | None) -> str:
     return f"{size_bytes:.1f} PB"
 
 
+def _check_video_exists(title: str, videos_dir: Path) -> Path | None:
+    """Check if a video with the given title already exists in the directory.
+    
+    Args:
+        title: Video title to search for
+        videos_dir: Directory to search in
+        
+    Returns:
+        Path to existing file if found, None otherwise
+    """
+    if not title:
+        return None
+        
+    sanitized_title = sanitize_filename(title)
+    common_extensions = [".mp4", ".webm", ".mkv", ".avi", ".mov", ".m4v"]
+    
+    for ext in common_extensions:
+        potential_file = videos_dir / f"{sanitized_title}{ext}"
+        if potential_file.exists():
+            return potential_file
+            
+    # Also check for any file that starts with the sanitized title
+    # to handle cases where yt-dlp might have added extra suffixes
+    try:
+        for file_path in videos_dir.iterdir():
+            if file_path.is_file() and file_path.stem.startswith(sanitized_title):
+                return file_path
+    except (OSError, PermissionError):
+        pass
+        
+    return None
+
+
 def parse_video_range(range_str: str, total: int) -> list[int]:
     """Parse a human-friendly range string into a sorted list of 0-based indices.
 
@@ -283,6 +316,38 @@ def download_playlist(
         entry = playlist_info["entries"][idx] if idx < len(playlist_info["entries"]) else None
         entry_title = (entry.get("title") if entry else None) or f"Video #{idx + 1}"
         _current_video_title["title"] = entry_title
+
+        # Check if video already exists
+        existing_file = _check_video_exists(entry_title, videos_dir)
+        if existing_file:
+            # Video already exists, skip download
+            skipped += 1
+            completed += 1  # Count as completed since we don't need to download it
+            
+            # Add to metadata anyway since the file exists
+            video_meta: VideoMetadata = {
+                "title": entry_title,
+                "description": "Video already downloaded - skipped",
+                "upload_date": "Unknown",
+                "url": entry.get("url") or entry.get("webpage_url", "N/A") if entry else "N/A",
+            }
+            metadata.append(video_meta)
+            
+            if on_progress:
+                on_progress({
+                    "status": "complete",
+                    "video_title": entry_title,
+                    "seq": seq,
+                    "total_selected": total_selected,
+                    "completed": completed,
+                    "remaining": total_selected - completed,
+                    "elapsed": time.time() - start_time,
+                    "duration": "Unknown",
+                    "filesize": _format_size(existing_file.stat().st_size if existing_file.exists() else None),
+                    "skipped_existing": True,
+                })
+            
+            continue
 
         # Notify caller about which video we're starting
         if on_progress:

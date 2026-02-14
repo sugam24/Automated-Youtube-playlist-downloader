@@ -181,10 +181,17 @@ def _make_progress_callback() -> callable:
             title = info["video_title"]
             dur = info.get("duration", "?")
             size = info.get("filesize", "?")
-            _success(
-                f"Saved: {_BOLD}{title}{_RESET}"
-                f"  {_DIM}[{dur} | {size}]{_RESET}"
-            )
+            
+            if info.get("skipped_existing"):
+                _warn(
+                    f"Skipped (already exists): {_BOLD}{title}{_RESET}"
+                    f"  {_DIM}[{size}]{_RESET}"
+                )
+            else:
+                _success(
+                    f"Saved: {_BOLD}{title}{_RESET}"
+                    f"  {_DIM}[{dur} | {size}]{_RESET}"
+                )
 
         elif status == "error":
             _clear_line()
