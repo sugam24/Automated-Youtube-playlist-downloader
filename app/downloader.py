@@ -222,11 +222,18 @@ def extract_playlist_info(playlist_url: str) -> PlaylistInfo:
     entries = list(info.get("entries") or [])
     raw_title = info.get("title", "Untitled_Playlist")
 
+    # Construct and return a PlaylistInfo object containing
+    # both raw and sanitized titles along with playlist metadata.
     return PlaylistInfo(
-        title=raw_title,
-        sanitized_title=sanitize_filename(raw_title),
-        total_videos=len(entries),
-        entries=entries,
+        title=raw_title,  # Original playlist title as extracted from source
+        sanitized_title=sanitize_filename(raw_title),  
+        # Filesystem-safe version of the title (removes/escapes invalid characters)
+
+        total_videos=len(entries),  
+        # Total number of videos in the playlist (derived from entries list)
+
+        entries=entries,  
+        # List of video metadata objects belonging to the playlist
     )
 
 
