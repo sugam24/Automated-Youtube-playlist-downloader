@@ -319,10 +319,17 @@ def download_playlist(
     skipped = 0
     start_time = time.time()
 
-    for seq, idx in enumerate(selected_indices, start=1):
-        entry = playlist_info["entries"][idx] if idx < len(playlist_info["entries"]) else None
-        entry_title = (entry.get("title") if entry else None) or f"Video #{idx + 1}"
-        _current_video_title["title"] = entry_title
+   # Loop through selected video indices with a sequence counter starting from 1
+for seq, idx in enumerate(selected_indices, start=1):
+    
+    # Safely get the playlist entry if index is within range, otherwise set None
+    entry = playlist_info["entries"][idx] if idx < len(playlist_info["entries"]) else None
+    
+    # Extract video title if entry exists, otherwise fallback to default name
+    entry_title = (entry.get("title") if entry else None) or f"Video #{idx + 1}"
+    
+    # Store the current video title (used for tracking/display during download)
+    _current_video_title["title"] = entry_title
 
         # Check if video already exists
         existing_file = _check_video_exists(entry_title, videos_dir)
