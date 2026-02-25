@@ -60,13 +60,22 @@ def _format_elapsed(secs: float) -> str:
     m, s = divmod(int(secs), 60)
     return f"{m}m {s}s" if m else f"{s}s"
 
-
 def _progress_bar(current: int, total: int, width: int = 30) -> str:
-    """Build a simple ASCII progress bar ``[████░░░░░░] 40%``."""
-    pct = current / total if total else 0
-    filled = int(width * pct)
-    bar = "█" * filled + "░" * (width - filled)
-    return f"[{bar}] {pct*100:5.1f}%"
+    """
+    Generate an ASCII progress bar string.
+
+    Args:
+        current (int): Current progress value.
+        total (int): Total value representing 100% completion.
+        width (int, optional): Total width of the progress bar. Defaults to 30.
+
+    Returns:
+        str: Formatted progress bar string (e.g., "[████░░░░░░] 40.0%").
+    """
+    pct = current / total if total else 0   # Avoid division by zero
+    filled = int(width * pct)               # Number of filled blocks
+    bar = "█" * filled + "░" * (width - filled)  # Construct visual bar
+    return f"[{bar}] {pct*100:5.1f}%"       # Format percentage with 1 decimal
 
 
 # ---------------------------------------------------------------------------

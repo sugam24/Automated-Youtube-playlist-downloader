@@ -433,6 +433,8 @@ for seq, idx in enumerate(selected_indices, start=1):
             if on_progress:
                 on_progress({"status": "error", "video_title": entry_title, "error": str(exc)})
 
+     # Return structured result containing playlist info,
+    # output locations, metadata, and download statistics.
     return PlaylistResult(
         playlist_title=playlist_title,
         output_dir=output_dir,
@@ -441,4 +443,5 @@ for seq, idx in enumerate(selected_indices, start=1):
         skipped=skipped,
         failed=failed,
     )
+
 
