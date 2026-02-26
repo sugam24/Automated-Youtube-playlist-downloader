@@ -414,17 +414,22 @@ for seq, idx in enumerate(selected_indices, start=1):
             metadata.append(video_meta)
             completed += 1
 
+                       # Notify progress callback with final status and
+            # detailed metadata after successful download.
             if on_progress:
                 on_progress({
-                    "status": "complete",
+                    "status": "complete",  # Download completed successfully
                     "video_title": video_meta["title"],
-                    "seq": seq,
+                    "seq": seq,  # Current video sequence number
                     "total_selected": total_selected,
                     "completed": completed,
                     "remaining": total_selected - completed,
-                    "elapsed": time.time() - start_time,
+                    "elapsed": time.time() - start_time,  # Time taken for this download
                     "duration": _format_duration(downloaded_entry.get("duration")),
-                    "filesize": _format_size(downloaded_entry.get("filesize") or downloaded_entry.get("filesize_approx")),
+                    "filesize": _format_size(
+                        downloaded_entry.get("filesize") 
+                        or downloaded_entry.get("filesize_approx")
+                    ),
                 })
 
         except Exception as exc:
