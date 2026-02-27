@@ -438,8 +438,12 @@ for seq, idx in enumerate(selected_indices, start=1):
             if on_progress:
                 on_progress({"status": "error", "video_title": entry_title, "error": str(exc)})
 
-     # Return structured result containing playlist info,
+    # Return structured result containing playlist info,
     # output locations, metadata, and download statistics.
+    # Create and return a PlaylistResult object containing
+    # all relevant information about the processed playlist.
+    # This includes directory paths, collected metadata,
+    # and summary statistics such as skipped and failed downloads.
     return PlaylistResult(
         playlist_title=playlist_title,
         output_dir=output_dir,
