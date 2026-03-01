@@ -107,7 +107,7 @@ def _format_size(size_bytes: int | float | None) -> str:
         size_bytes /= 1024
     return f"{size_bytes:.1f} PB"
 
-
+# function
 def _check_video_exists(title: str, videos_dir: Path) -> Path | None:
     """Check if a video with the given title already exists in the directory.
     
